@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './index.css'
 import App from './App.jsx'
 import Home from './components/Home'
+import Profile from './components/Profile'
 import '@rainbow-me/rainbowkit/styles.css'
 import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit'
 import { WagmiProvider } from 'wagmi'
@@ -27,7 +28,7 @@ createRoot(document.getElementById('root')).render(
             <Routes>
               <Route path="/" element={<App />}>
                 <Route index element={<Home />} />
-                {/* Add more routes here as needed */}
+                <Route path="/profile" element={<Profile />} />
               </Route>
             </Routes>
           </BrowserRouter>
