@@ -6,6 +6,7 @@ import App from './App.jsx'
 import Home from './components/Home'
 import Profile from './components/Profile'
 import Create from './components/Create'
+import LiveBet from './components/LiveBet'
 import '@rainbow-me/rainbowkit/styles.css'
 import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit'
 import { WagmiProvider } from 'wagmi'
@@ -31,6 +32,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                 <Route index element={<Home />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/create" element={<Create />} />
+                <Route path="/live-bets" element={<LiveBet />} />
               </Route>
             </Routes>
           </Router>

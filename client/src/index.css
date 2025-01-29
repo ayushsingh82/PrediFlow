@@ -2,7 +2,3 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Add custom gradient background */
-.custom-gradient {
-  background: linear-gradient(to bottom, #ec4899 0%, #111827 50%, #111827 100%);
-}

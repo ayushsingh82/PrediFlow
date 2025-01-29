@@ -16,10 +16,12 @@ function Home() {
             Trade on your predictions and earn rewards
           </p>
           <div className="flex justify-center gap-4">
-            <ConnectButton />
+            <div className="bg-pink-900 rounded-2xl p-2">
+              <ConnectButton />
+            </div>
             <button 
               onClick={() => navigate('/profile')}
-              className="ml-[20px] bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-6 rounded-lg text-xl transition-colors"
+              className="bg-pink-600 hover:bg-pink-500 text-white font-bold py-3 px-8 rounded-2xl border-2 border-pink-500 transition-colors text-xl"
             >
               Start
             </button>

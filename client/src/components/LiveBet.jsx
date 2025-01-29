@@ -3,7 +3,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { FaChartLine, FaPlus, FaUser } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 
-function Profile() {
+function LiveBet() {
   const navigate = useNavigate()
 
   return (
@@ -22,34 +22,12 @@ function Profile() {
         <div className="h-px bg-pink-800/60 w-full"></div>
       </div>
 
-      {/* Stats Boxes */}
-      <div className="w-full max-w-3xl mb-8">
-        <div className="grid grid-cols-3 bg-pink-900 rounded-2xl overflow-hidden border-2 border-pink-500">
-          <div className="p-4 text-center border-r border-pink-800/60">
-            <h3 className="text-sm font-semibold text-pink-200 mb-1">Total Bets</h3>
-            <p className="text-2xl font-bold text-white">0</p>
-          </div>
-          
-          <div className="p-4 text-center border-r border-pink-800/60">
-            <h3 className="text-sm font-semibold text-pink-200 mb-1">Win Percentage</h3>
-            <p className="text-2xl font-bold text-white">0%</p>
-          </div>
-          
-          <div className="p-4 text-center">
-            <h3 className="text-sm font-semibold text-pink-200 mb-1">Active Bets</h3>
-            <p className="text-2xl font-bold text-white">0</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Recent Activity */}
+      {/* Live Bets Content */}
       <div className="w-full max-w-3xl mb-16">
         <div className="bg-pink-900 rounded-2xl p-6 border-2 border-pink-500">
-          <h2 className="text-2xl font-bold text-white mb-4 text-center">Recent Activities</h2>
+          <h2 className="text-2xl font-bold text-white mb-6 text-center">Live Bets</h2>
           <div className="text-gray-300">
-            <div className="border-b border-pink-800/60 py-3">
-              <p className="text-center">No recent activities</p>
-            </div>
+            <p className="text-center py-4">No active bets at the moment</p>
           </div>
         </div>
       </div>
@@ -83,4 +61,4 @@ function Profile() {
   )
 }
 
-export default Profile
+export default LiveBet
