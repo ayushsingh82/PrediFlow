@@ -1,10 +1,11 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import './index.css'
 import App from './App.jsx'
 import Home from './components/Home'
 import Profile from './components/Profile'
+import Create from './components/Create'
 import '@rainbow-me/rainbowkit/styles.css'
 import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit'
 import { WagmiProvider } from 'wagmi'
@@ -19,21 +20,22 @@ const config = getDefaultConfig({
 
 const queryClient = new QueryClient()
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
-          <BrowserRouter>
+          <Router>
             <Routes>
               <Route path="/" element={<App />}>
                 <Route index element={<Home />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/create" element={<Create />} />
               </Route>
             </Routes>
-          </BrowserRouter>
+          </Router>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
-  </StrictMode>,
+  </React.StrictMode>
 )

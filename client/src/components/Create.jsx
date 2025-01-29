@@ -3,7 +3,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { FaHistory, FaPlus, FaUser } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 
-function Profile() {
+function Create() {
   const navigate = useNavigate()
 
   return (
@@ -14,42 +14,21 @@ function Profile() {
         <ConnectButton />
       </div>
 
-      {/* Stats Boxes */}
-      <div className="w-full max-w-3xl mb-8">
-        <div className="grid grid-cols-3 bg-pink-900/50 rounded-lg overflow-hidden border border-pink-800">
-          <div className="p-4 text-center border-r border-pink-800">
-            <h3 className="text-sm font-semibold text-pink-200 mb-1">Total Bets</h3>
-            <p className="text-2xl font-bold text-white">0</p>
-          </div>
-          
-          <div className="p-4 text-center border-r border-pink-800">
-            <h3 className="text-sm font-semibold text-pink-200 mb-1">Win Percentage</h3>
-            <p className="text-2xl font-bold text-white">0%</p>
-          </div>
-          
-          <div className="p-4 text-center">
-            <h3 className="text-sm font-semibold text-pink-200 mb-1">Active Bets</h3>
-            <p className="text-2xl font-bold text-white">0</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Recent Activity */}
+      {/* Create Form will go here */}
       <div className="w-full max-w-3xl mb-16">
         <div className="bg-pink-900/50 rounded-lg p-6 border border-pink-800">
-          <h2 className="text-2xl font-bold text-white mb-4 text-center">Recent Activities</h2>
-          <div className="text-gray-300">
-            <div className="border-b border-pink-800 py-3">
-              <p className="text-center">No recent activities</p>
-            </div>
-          </div>
+          <h2 className="text-2xl font-bold text-white mb-6 text-center">Create New Bet</h2>
+          {/* Add your form elements here */}
         </div>
       </div>
 
       {/* Navigation Icons */}
       <div className="w-full max-w-3xl">
         <div className="bg-pink-900/50 rounded-lg p-6 border border-pink-800 flex justify-between items-center px-16">
-          <button className="flex flex-col items-center gap-2 text-white hover:text-pink-400 transition-colors">
+          <button 
+            onClick={() => navigate('/history')}
+            className="flex flex-col items-center gap-2 text-white hover:text-pink-400 transition-colors"
+          >
             <FaHistory size={32} />
             <span className="text-sm">History</span>
           </button>
@@ -72,4 +51,4 @@ function Profile() {
   )
 }
 
-export default Profile
+export default Create
