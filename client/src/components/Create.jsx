@@ -16,13 +16,13 @@ function Create() {
   }
 
   return (
-    <div className="min-h-screen bg-pink-950 flex flex-col items-center justify-center p-8">
+    <div className="min-h-screen bg-pink-200 flex flex-col items-center justify-center p-8">
       {/* Header with Wallet Connection */}
       <div className="w-full max-w-3xl mb-16">
         <div className="flex justify-between items-center mb-4">
           <h1 
             onClick={() => navigate('/')}
-            className="text-3xl font-bold text-white cursor-pointer hover:text-pink-400 transition-colors"
+            className="text-3xl font-bold text-pink-600 cursor-pointer hover:text-pink-500 transition-colors"
           >
             Vortis
           </h1>
@@ -33,7 +33,7 @@ function Create() {
 
       {/* Create Form */}
       <div className="w-full max-w-xl mb-16">
-        <div className="bg-pink-900 rounded-2xl p-8 border-2 border-pink-500">
+        <div className="bg-pink-300 rounded-2xl p-8 border-2 border-pink-500">
           <div className="flex items-center justify-center gap-3 mb-8">
             <FaQuestionCircle className="text-pink-400 text-3xl" />
             <h2 className="text-2xl font-bold text-white text-center">Create New Prediction</h2>
@@ -41,42 +41,42 @@ function Create() {
           
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Description */}
-            <div className="bg-pink-950/50 p-5 rounded-xl border border-pink-500/30">
-              <label className="block text-pink-200 text-sm font-semibold mb-2">
+            <div className="bg-pink-200 p-5 rounded-xl border border-pink-400">
+              <label className="block text-black text-sm font-semibold mb-2">
                 What's your prediction?
               </label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-pink-950 border-2 border-pink-500/50 text-white placeholder-pink-300/50 focus:outline-none focus:border-pink-400 transition-colors"
+                className="w-full px-4 py-3 rounded-xl bg-white border-2 border-pink-400 text-black placeholder-gray-500 focus:outline-none focus:border-pink-500 transition-colors"
                 placeholder="E.g., Will Bitcoin reach $100k?"
                 rows="2"
               />
             </div>
 
             {/* Options */}
-            <div className="bg-pink-950/50 p-5 rounded-xl border border-pink-500/30">
-              <label className="block text-pink-200 text-sm font-semibold mb-3">
+            <div className="bg-pink-200 p-5 rounded-xl border border-pink-400">
+              <label className="block text-black text-sm font-semibold mb-3">
                 Prediction Options
               </label>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <div className="text-xs text-pink-300 mb-2">Option 1</div>
+                  <div className="text-xs text-black mb-2">Option 1</div>
                   <input
                     type="text"
                     value={option1}
                     onChange={(e) => setOption1(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-pink-950 border-2 border-pink-500/50 text-white placeholder-pink-300/50 focus:outline-none focus:border-pink-400 transition-colors"
+                    className="w-full px-4 py-2.5 rounded-xl bg-white border-2 border-pink-400 text-black placeholder-gray-500 focus:outline-none focus:border-pink-500 transition-colors"
                     placeholder="Yes"
                   />
                 </div>
                 <div>
-                  <div className="text-xs text-pink-300 mb-2">Option 2</div>
+                  <div className="text-xs text-black mb-2">Option 2</div>
                   <input
                     type="text"
                     value={option2}
                     onChange={(e) => setOption2(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-pink-950 border-2 border-pink-500/50 text-white placeholder-pink-300/50 focus:outline-none focus:border-pink-400 transition-colors"
+                    className="w-full px-4 py-2.5 rounded-xl bg-white border-2 border-pink-400 text-black placeholder-gray-500 focus:outline-none focus:border-pink-500 transition-colors"
                     placeholder="No"
                   />
                 </div>
@@ -84,15 +84,15 @@ function Create() {
             </div>
 
             {/* End Time */}
-            <div className="bg-pink-950/50 p-5 rounded-xl border border-pink-500/30">
-              <label className="block text-pink-200 text-sm font-semibold mb-2">
+            <div className="bg-pink-200 p-5 rounded-xl border border-pink-400">
+              <label className="block text-black text-sm font-semibold mb-2">
                 When will this prediction end?
               </label>
               <input
                 type="datetime-local"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-pink-950 border-2 border-pink-500/50 text-white placeholder-pink-300/50 focus:outline-none focus:border-pink-400 transition-colors"
+                className="w-full px-4 py-2.5 rounded-xl bg-white border-2 border-pink-400 text-black placeholder-gray-500 focus:outline-none focus:border-pink-500 transition-colors"
               />
             </div>
 
@@ -109,10 +109,10 @@ function Create() {
 
       {/* Navigation Icons */}
       <div className="w-full max-w-3xl">
-        <div className="bg-pink-900 rounded-2xl p-6 border-2 border-pink-500 flex justify-between items-center px-16">
+        <div className="bg-pink-300 rounded-2xl p-6 border-2 border-pink-500 flex justify-between items-center px-16">
           <button 
             onClick={() => navigate('/live-bets')}
-            className="flex flex-col items-center gap-2 text-white hover:text-pink-400 transition-colors"
+            className="flex flex-col items-center gap-2 text-black"
           >
             <FaChartLine size={32} />
             <span className="text-sm">Live Bets</span>
@@ -125,7 +125,7 @@ function Create() {
           </button>
           <button 
             onClick={() => navigate('/profile')}
-            className="flex flex-col items-center gap-2 text-white hover:text-pink-400 transition-colors"
+            className="flex flex-col items-center gap-2 text-black"
           >
             <FaUser size={32} />
             <span className="text-sm">Profile</span>
