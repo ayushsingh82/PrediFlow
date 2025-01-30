@@ -32,7 +32,7 @@ function Profile() {
           
           <div className="p-4 text-center border-r border-pink-800/60">
             <h3 className="text-sm font-semibold text-black mb-1">Win Percentage</h3>
-            <p className="text-2xl font-bold text-black">0%</p>
+            <p className="text-2xl font-bold text-black">78%</p>
           </div>
           
           <div className="p-4 text-center">
