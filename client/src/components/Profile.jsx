@@ -1,7 +1,7 @@
 import React from 'react'
-import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { FaChartLine, FaPlus, FaUser } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
+import { ConnectButton } from './ConnectButton'
 
 function Profile() {
   const navigate = useNavigate()

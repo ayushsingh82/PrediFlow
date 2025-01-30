@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { ConnectButton } from '@rainbow-me/rainbowkit'
+import { ConnectButton } from './ConnectButton'
 import { FaChartLine, FaPlus, FaUser, FaQuestionCircle } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 

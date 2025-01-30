@@ -1,43 +1,62 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { PrivyProvider } from '@privy-io/react-auth'
 import './index.css'
 import App from './App.jsx'
 import Home from './components/Home'
 import Profile from './components/Profile'
 import Create from './components/Create'
 import LiveBet from './components/LiveBet'
-import '@rainbow-me/rainbowkit/styles.css'
-import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit'
-import { WagmiProvider } from 'wagmi'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { mainnet, sepolia } from 'wagmi/chains'
-
-const config = getDefaultConfig({
-  appName: 'Prediction Market',
-  projectId: 'YOUR_PROJECT_ID', // Get one from https://cloud.walletconnect.com
-  chains: [mainnet, sepolia],
-})
-
-const queryClient = new QueryClient()
+import { PrivateRoute } from './components/PrivateRoute'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider>
-          <Router>
-            <Routes>
-              <Route path="/" element={<App />}>
-                <Route index element={<Home />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/create" element={<Create />} />
-                <Route path="/live-bets" element={<LiveBet />} />
-              </Route>
-            </Routes>
-          </Router>
-        </RainbowKitProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
+    <PrivyProvider
+      appId="cm6ifh5ql004ze7raa9cr0n3k"
+      config={{
+        loginMethods: ['email', 'wallet'],
+        appearance: {
+          theme: 'dark',
+          accentColor: '#3B82F6',
+          logo: 'https://your-logo-url',
+        },
+        embeddedWallets: {
+          createOnLogin: 'users-without-wallets',
+        },
+      }}
+    >
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />}>
+            <Route index element={<Home />} />
+            <Route
+              path="profile"
+              element={
+                <PrivateRoute>
+                  <Profile />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="create"
+              element={
+                <PrivateRoute>
+                  <Create />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="live-bets"
+              element={
+                <PrivateRoute>
+                  <LiveBet />
+                </PrivateRoute>
+              }
+            />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </PrivyProvider>
   </React.StrictMode>
 )
