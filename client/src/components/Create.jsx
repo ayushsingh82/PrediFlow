@@ -20,12 +20,19 @@ function Create() {
       {/* Header with Wallet Connection */}
       <div className="w-full max-w-3xl mb-16">
         <div className="flex justify-between items-center mb-4">
-          <h1 
-            onClick={() => navigate('/')}
-            className="text-3xl font-bold text-pink-600 cursor-pointer hover:text-pink-500 transition-colors"
-          >
-            Vortis
-          </h1>
+          <div className="flex items-center gap-4">
+            <h1 
+              onClick={() => navigate('/')}
+              className="text-3xl font-bold text-pink-600 cursor-pointer hover:text-pink-500 transition-colors"
+            >
+              Vortis
+            </h1>
+            <button
+              className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-1.5 rounded-xl text-sm font-medium hover:from-purple-500 hover:to-blue-500 transition-colors"
+            >
+              Eliza AI
+            </button>
+          </div>
           <ConnectButton />
         </div>
         <div className="h-px bg-pink-800/60 w-full"></div>

@@ -15,6 +15,9 @@ function Home() {
           <p className="text-xl text-black mb-12">
             Trade on your predictions and earn rewards
           </p>
+          <div className="flex justify-center gap-4 mb-4">
+          
+          </div>
           <div className="flex justify-center gap-4">
             <div className="bg-blue-500 rounded-2xl p-2">
               <ConnectButton />
