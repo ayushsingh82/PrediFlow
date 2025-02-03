@@ -28,6 +28,7 @@ function Create() {
               Vortis
             </h1>
             <button
+              onClick={() => navigate('/eliza')}
               className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-1.5 rounded-xl text-sm font-medium hover:from-purple-500 hover:to-blue-500 transition-colors"
             >
               Eliza AI

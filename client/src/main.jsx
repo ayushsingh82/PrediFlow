@@ -9,6 +9,7 @@ import Profile from './components/Profile'
 import Create from './components/Create'
 import LiveBet from './components/LiveBet'
 import { PrivateRoute } from './components/PrivateRoute'
+import Eliza from './components/Eliza'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -51,6 +52,14 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               element={
                 <PrivateRoute>
                   <LiveBet />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="eliza"
+              element={
+                <PrivateRoute>
+                  <Eliza />
                 </PrivateRoute>
               }
             />
