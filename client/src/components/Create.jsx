@@ -2,13 +2,13 @@ import React, { useState } from 'react'
 import { ConnectButton } from './ConnectButton'
 import { FaChartLine, FaPlus, FaUser, FaQuestionCircle } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
-import { publicClient, walletClient } from '../config'
+import { publicClient, getWalletClient, chainConfig } from '../config'
 import { wagmiAbi } from '../abi'
-import { useAccount } from 'wagmi'
+import { usePrivy } from '@privy-io/react-auth'
 
 function Create() {
   const navigate = useNavigate()
-  const { address } = useAccount()
+  const { user } = usePrivy()
   
   const [question, setQuestion] = useState('')
   const [option1, setOption1] = useState('Yes')
@@ -18,6 +18,30 @@ function Create() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
+  const switchNetwork = async () => {
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: chainConfig.chainId }],
+      })
+    } catch (switchError) {
+      // This error code indicates that the chain has not been added to MetaMask
+      if (switchError.code === 4902) {
+        try {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [chainConfig],
+          })
+        } catch (addError) {
+          console.error('Error adding chain:', addError)
+          throw new Error('Failed to add network to MetaMask')
+        }
+      } else {
+        throw switchError
+      }
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
@@ -25,24 +49,37 @@ function Create() {
     setSuccess('')
 
     try {
-      // Simulate the contract call
+      // First switch to Flow Testnet
+      await switchNetwork()
+
+      const walletClient = getWalletClient()
+      if (!walletClient) {
+        throw new Error('Wallet not connected')
+      }
+
+      // Get the signer's address
+      const [address] = await walletClient.getAddresses()
+
       const { request } = await publicClient.simulateContract({
-        address: '0xB7CdDE1b9064885D32411A87b06318Bbba5b5aFA',
+        address: '0x43ca3D2C94be00692D207C6A1e60D8B325c6f12f',
         abi: wagmiAbi,
         functionName: 'submitQuestion',
         args: [question],
-        account: address
+        account: address  // Use the signer's address
       })
 
-      // Write to the contract
+      // Write to the contract using the wallet client
       const hash = await walletClient.writeContract(request)
+      
+      // Wait for transaction confirmation
+      setSuccess('Waiting for transaction confirmation...')
       await publicClient.waitForTransactionReceipt({ hash })
 
       setSuccess('Prediction created successfully!')
       setTimeout(() => navigate('/live-bets'), 2000)
     } catch (err) {
       console.error('Error creating prediction:', err)
-      setError('Failed to create prediction. Please try again.')
+      setError(err.message || 'Failed to create prediction. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -84,8 +121,8 @@ function Create() {
                 What's your prediction?
               </label>
               <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl bg-white border-2 border-pink-400 text-black placeholder-gray-500 focus:outline-none focus:border-pink-500 transition-colors"
                 placeholder="E.g., Will Bitcoin reach $100k?"
                 rows="2"

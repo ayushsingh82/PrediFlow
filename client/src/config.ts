@@ -1,4 +1,4 @@
-import { createPublicClient, createWalletClient, http } from 'viem'
+import { createPublicClient, createWalletClient, http, custom } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { flow } from 'viem/chains'
 
@@ -32,11 +32,16 @@ export const publicClient = createPublicClient({
   transport: http()
 })
 
-// Wallet client
-export const walletClient = createWalletClient({
-  chain: flowTestnet,
-  transport: http()
-})
+// Get Wallet Client function
+export const getWalletClient = () => {
+  if (typeof window !== 'undefined' && window.ethereum) {
+    return createWalletClient({
+      chain: flowTestnet,
+      transport: custom(window.ethereum)
+    })
+  }
+  return null
+}
 
 // Chain configuration for wallet connection
 export const chainConfig = {

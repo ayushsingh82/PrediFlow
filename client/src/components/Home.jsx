@@ -12,7 +12,7 @@ function Home() {
           <div className="text-4xl mb-4">
             🚀 🎯 🎊
           </div>
-          <h1 className="text-xxl md:text-2xl font-bold text-pink-600 mb-8">
+          <h1 className="text-3xl md:text-3xl font-bold text-pink-600 mb-8">
             PrediFlow
           </h1>
           <p className="text-xl text-black mb-12">
