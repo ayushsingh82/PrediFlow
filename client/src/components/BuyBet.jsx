@@ -23,7 +23,7 @@ function BuyBet() {
               onClick={() => navigate('/')}
               className="text-3xl font-bold text-pink-600 cursor-pointer hover:text-pink-500 transition-colors"
             >
-              Vortis
+              PrediFlow
             </h1>
           </div>
           <ConnectButton />

@@ -2,17 +2,50 @@ import React, { useState } from 'react'
 import { ConnectButton } from './ConnectButton'
 import { FaChartLine, FaPlus, FaUser, FaQuestionCircle } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
+import { publicClient, walletClient } from '../config'
+import { wagmiAbi } from '../abi'
+import { useAccount } from 'wagmi'
 
 function Create() {
   const navigate = useNavigate()
-  const [description, setDescription] = useState('')
+  const { address } = useAccount()
+  
+  const [question, setQuestion] = useState('')
   const [option1, setOption1] = useState('Yes')
   const [option2, setOption2] = useState('No')
   const [endTime, setEndTime] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log({ description, option1, option2, endTime })
+    setLoading(true)
+    setError('')
+    setSuccess('')
+
+    try {
+      // Simulate the contract call
+      const { request } = await publicClient.simulateContract({
+        address: '0xB7CdDE1b9064885D32411A87b06318Bbba5b5aFA',
+        abi: wagmiAbi,
+        functionName: 'submitQuestion',
+        args: [question],
+        account: address
+      })
+
+      // Write to the contract
+      const hash = await walletClient.writeContract(request)
+      await publicClient.waitForTransactionReceipt({ hash })
+
+      setSuccess('Prediction created successfully!')
+      setTimeout(() => navigate('/live-bets'), 2000)
+    } catch (err) {
+      console.error('Error creating prediction:', err)
+      setError('Failed to create prediction. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -25,7 +58,7 @@ function Create() {
               onClick={() => navigate('/')}
               className="text-3xl font-bold text-pink-600 cursor-pointer hover:text-pink-500 transition-colors"
             >
-              Vortis
+              PrediFlow
             </h1>
           </div>
           <ConnectButton />
@@ -41,6 +74,9 @@ function Create() {
             <h2 className="text-2xl font-bold text-white text-center">Create New Prediction</h2>
           </div>
           
+          {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
+          {success && <p className="text-green-500 mb-4 text-center">{success}</p>}
+          
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Description */}
             <div className="bg-pink-200 p-5 rounded-xl border border-pink-400">
@@ -53,6 +89,7 @@ function Create() {
                 className="w-full px-4 py-3 rounded-xl bg-white border-2 border-pink-400 text-black placeholder-gray-500 focus:outline-none focus:border-pink-500 transition-colors"
                 placeholder="E.g., Will Bitcoin reach $100k?"
                 rows="2"
+                required
               />
             </div>
 
@@ -95,15 +132,20 @@ function Create() {
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl bg-white border-2 border-pink-400 text-black placeholder-gray-500 focus:outline-none focus:border-pink-500 transition-colors"
+                required
               />
             </div>
 
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-500 hover:to-pink-400 text-white font-bold py-3.5 px-6 rounded-xl border-2 border-pink-500/50 transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg"
+              disabled={loading}
+              className={`w-full bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-500 hover:to-pink-400 
+                text-white font-bold py-3.5 px-6 rounded-xl border-2 border-pink-500/50 transition-all 
+                transform hover:scale-[1.02] active:scale-[0.98] shadow-lg
+                ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              Create Prediction
+              {loading ? 'Creating Prediction...' : 'Create Prediction'}
             </button>
           </form>
         </div>

@@ -10,10 +10,13 @@ function Home() {
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-pink-600 mb-8">
-            Prediction Market
+          PrediFlow
           </h1>
           <p className="text-xl text-black mb-12">
-            Trade on your predictions and earn rewards
+            Prediction market on Flow powered by eliza AI <br/> and polymarket insights.
+
+            <hr className='mt-[10px] mb-[10px]'/>
+            Predict the future  and earn rewards.
           </p>
           <div className="flex justify-center gap-4">
             <div className="bg-blue-500 rounded-2xl p-2">
