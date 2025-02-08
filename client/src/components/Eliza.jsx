@@ -2,30 +2,58 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ConnectButton } from './ConnectButton'
 import { FaRobot, FaPaperPlane, FaChartLine, FaPlus, FaUser } from 'react-icons/fa'
+import { GoogleGenerativeAI } from "@google/generative-ai"
 
 function Eliza() {
   const navigate = useNavigate()
   const [messages, setMessages] = useState([
-    { text: "Hi! I'm Eliza, your prediction assistant. How can I help you today?", isBot: true }
+    { text: "Hi! I'm looking for help with predictions.", isBot: false }
   ])
   const [input, setInput] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleSend = (e) => {
+  // Initialize Gemini API
+  const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY)
+  const model = genAI.getGenerativeModel({ model: "gemini-pro" })
+
+  const handleSend = async (e) => {
     e.preventDefault()
-    if (!input.trim()) return
+    if (!input.trim() || isLoading) return
 
-    // Add user message
-    setMessages(prev => [...prev, { text: input, isBot: false }])
-
-    // Simulate bot response
-    setTimeout(() => {
-      setMessages(prev => [...prev, {
-        text: "I'm a simple demo bot. I can help you understand prediction markets better!",
-        isBot: true
-      }])
-    }, 1000)
-
+    const userMessage = input
+    setMessages(prev => [...prev, { text: userMessage, isBot: false }])
     setInput('')
+    setIsLoading(true)
+
+    try {
+      // Create a new chat instance
+      const chat = model.startChat({
+        generationConfig: {
+          maxOutputTokens: 150,
+          temperature: 0.7,
+        },
+      })
+
+      // Send the message with context
+      const prompt = `You are Eliza, a knowledgeable prediction market and cryptocurrency assistant. 
+                     Previous context: ${messages.map(m => m.text).join('\n')}
+                     User question: ${userMessage}
+                     Please provide a helpful response:`
+
+      const result = await chat.sendMessage([prompt])
+      const response = await result.response
+      const botResponse = response.text()
+
+      setMessages(prev => [...prev, { text: botResponse, isBot: true }])
+    } catch (error) {
+      console.error('Gemini API Error:', error)
+      setMessages(prev => [...prev, { 
+        text: "I apologize, but I'm experiencing a technical issue. Please try asking your question again.", 
+        isBot: true 
+      }])
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -72,6 +100,13 @@ function Eliza() {
               </div>
             </div>
           ))}
+          {isLoading && (
+            <div className="flex justify-start">
+              <div className="bg-white text-black rounded-2xl rounded-tl-none px-4 py-2">
+                Typing...
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Input */}
@@ -83,10 +118,14 @@ function Eliza() {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type your message..."
               className="flex-1 px-4 py-2 rounded-xl border-2 border-pink-400 focus:outline-none focus:border-pink-500"
+              disabled={isLoading}
             />
             <button
               type="submit"
-              className="bg-pink-500 text-white p-3 rounded-xl hover:bg-pink-600 transition-colors"
+              className={`bg-pink-500 text-white p-3 rounded-xl transition-colors ${
+                isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-pink-600'
+              }`}
+              disabled={isLoading}
             >
               <FaPaperPlane />
             </button>
