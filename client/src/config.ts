@@ -1,17 +1,56 @@
-import { createPublicClient, createWalletClient, custom, http} from 'viem'
+import { createPublicClient, createWalletClient, http } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
-import { baseSepolia, mainnet ,sepolia ,flowTestnet} from 'viem/chains'
- 
+import { flow } from 'viem/chains'
+
+// Custom Flow Testnet configuration
+export const flowTestnet = {
+  id: 545,
+  name: 'Flow Testnet',
+  network: 'flow-testnet',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'Flow',
+    symbol: 'FLOW',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://testnet.evm.nodes.onflow.org'],
+    },
+    public: {
+      http: ['https://testnet.evm.nodes.onflow.org'],
+    },
+  },
+  blockExplorers: {
+    default: { name: 'FlowScan', url: 'https://testnet.flowscan.org' },
+  },
+  testnet: true,
+}
+
+// Public client
 export const publicClient = createPublicClient({
   chain: flowTestnet,
   transport: http()
 })
- 
+
+// Wallet client
 export const walletClient = createWalletClient({
   chain: flowTestnet,
-  transport: custom(window.ethereum)
+  transport: http()
 })
- 
+
+// Chain configuration for wallet connection
+export const chainConfig = {
+  chainId: '0x221', // 545 in hex
+  chainName: 'Flow Testnet',
+  nativeCurrency: {
+    name: 'Flow',
+    symbol: 'FLOW',
+    decimals: 18
+  },
+  rpcUrls: ['https://testnet.evm.nodes.onflow.org'],
+  blockExplorerUrls: ['https://testnet.flowscan.org']
+}
+
 // JSON-RPC Account
 // export const [account] = await walletClient.getAddresses()
 

@@ -1,7 +1,36 @@
 import { usePrivy } from '@privy-io/react-auth'
+import { useEffect } from 'react'
+import { chainConfig } from '../config'
 
 export function ConnectButton() {
   const { login, logout, authenticated, user, ready } = usePrivy()
+
+  useEffect(() => {
+    if (window.ethereum && authenticated) {
+      setupNetwork()
+    }
+  }, [authenticated])
+
+  const setupNetwork = async () => {
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: chainConfig.chainId }],
+      })
+    } catch (switchError) {
+      // If chain doesn't exist, add it
+      if (switchError.code === 4902) {
+        try {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [chainConfig],
+          })
+        } catch (addError) {
+          console.error('Error adding chain:', addError)
+        }
+      }
+    }
+  }
 
   if (!ready) {
     return (
