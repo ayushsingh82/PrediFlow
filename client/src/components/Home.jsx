@@ -9,14 +9,22 @@ function Home() {
     <div className="min-h-screen bg-pink-200 flex items-center">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-pink-600 mb-8">
-          PrediFlow
+          <div className="text-4xl mb-4">
+            🚀 🎯 🎊
+          </div>
+          <h1 className="text-xxl md:text-2xl font-bold text-pink-600 mb-8">
+            PrediFlow
           </h1>
           <p className="text-xl text-black mb-12">
-            Prediction market on Flow powered by eliza AI <br/> and polymarket insights.
+            <span className=" px-4 py-2 rounded-lg text-sm font-bold">
+              Prediction market on Flow powered by eliza AI <br/> and polymarket insights.
+            </span>
 
-            <hr className='mt-[10px] mb-[10px]'/>
-            Predict the future  and earn rewards.
+            <hr className='mt-[10px] mb-[10px] border-blue-500/30'/>
+            
+            <span className="bg-blue-300 px-4 py-2 rounded-lg mt-[20px] text-lg">
+              Predict the future and earn rewards.
+            </span>
           </p>
           <div className="flex justify-center gap-4">
             <div className="bg-blue-500 rounded-2xl p-2">
