@@ -1,16 +1,19 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { ConnectButton } from './ConnectButton'
 import { FaChartLine, FaPlus, FaUser, FaRobot, FaPaperPlane, FaTimes } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
-import questions from './question.json'
 import { motion, useMotionValue, useTransform, useAnimation } from 'framer-motion'
 import { GoogleGenerativeAI } from "@google/generative-ai"
+import { publicClient } from '../config'
+import { wagmiAbi } from '../abi'
 
 function LiveBet() {
   const navigate = useNavigate()
-  const questionArray = questions.questions || []
+  const [questions, setQuestions] = useState([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [showChat, setShowChat] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const [messages, setMessages] = useState([
     { text: "Hi! I'm looking for help with predictions.", isBot: false }
   ])
@@ -28,6 +31,28 @@ function LiveBet() {
   const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY)
   const model = genAI.getGenerativeModel({ model: "gemini-pro" })
 
+  // Fetch questions from contract
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const contractQuestions = await publicClient.readContract({
+          address: "0x43ca3D2C94be00692D207C6A1e60D8B325c6f12f",
+          abi: wagmiAbi,
+          functionName: "getAllQuestions"
+        });
+        console.log('Fetched questions:', contractQuestions)
+        setQuestions(contractQuestions)
+      } catch (err) {
+        console.error('Error fetching questions:', err)
+        setError('Failed to load predictions')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchQuestions()
+  }, [])
+
   const handleDragEnd = async (_, info) => {
     const swipeThreshold = 100
 
@@ -42,7 +67,7 @@ function LiveBet() {
         return
       }
 
-      if (currentIndex >= questionArray.length - 1) {
+      if (currentIndex >= questions.length - 1) {
         navigate('/profile')
         return
       }
@@ -130,64 +155,72 @@ function LiveBet() {
 
       {/* Swipeable Card */}
       <div className="w-full max-w-xl mb-8 relative z-20">
-        <motion.div
-          drag="x"
-          dragConstraints={{ left: 0, right: 0 }}
-          style={{ x, y, rotate }}
-          animate={controls}
-          onDragEnd={handleDragEnd}
-          className="w-full cursor-grab active:cursor-grabbing"
-        >
-          <div className="bg-gradient-to-br from-pink-400 to-purple-500 rounded-2xl overflow-hidden shadow-xl">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxjaXJjbGUgY3g9IjIwIiBjeT0iMjAiIHI9IjIiLz48L2c+PC9zdmc+')]"></div>
+        {loading ? (
+          <div className="text-center text-xl font-bold text-pink-600">Loading predictions...</div>
+        ) : error ? (
+          <div className="text-center text-red-500">{error}</div>
+        ) : questions.length === 0 ? (
+          <div className="text-center text-xl font-bold text-pink-600">No predictions available</div>
+        ) : (
+          <motion.div
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            style={{ x, y, rotate }}
+            animate={controls}
+            onDragEnd={handleDragEnd}
+            className="w-full cursor-grab active:cursor-grabbing"
+          >
+            <div className="bg-gradient-to-br from-pink-400 to-purple-500 rounded-2xl overflow-hidden shadow-xl">
+              {/* Background Pattern */}
+              <div className="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSIjZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxjaXJjbGUgY3g9IjIwIiBjeT0iMjAiIHI9IjIiLz48L2c+PC9zdmc+')]"></div>
 
-            {/* Card Content */}
-            <div className="p-6">
-              {/* Question Number */}
-              <div className="text-white/80 text-sm mb-4">
-                Question {currentIndex + 1} of {questionArray.length}
-              </div>
+              {/* Card Content */}
+              <div className="p-6">
+                {/* Question Number */}
+                <div className="text-white/80 text-sm mb-4">
+                  Question {currentIndex + 1} of {questions.length}
+                </div>
 
-              {/* Question */}
-              <div className="min-h-[100px] flex items-center mb-6">
-                <h3 className="text-xl font-bold text-white text-center w-full">
-                  {questionArray[currentIndex]?.question}
-                </h3>
-              </div>
+                {/* Question */}
+                <div className="min-h-[100px] flex items-center mb-6">
+                  <h3 className="text-xl font-bold text-white text-center w-full">
+                    {questions[currentIndex]}
+                  </h3>
+                </div>
 
-              {/* Bottom Buttons */}
-              <div className="flex justify-between items-center mt-8">
-                <button 
-                  onClick={() => handleDragEnd(null, { offset: { x: -150 } })}
-                  className="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-all transform hover:scale-105 active:scale-95"
+                {/* Bottom Buttons */}
+                <div className="flex justify-between items-center mt-8">
+                  <button 
+                    onClick={() => handleDragEnd(null, { offset: { x: -150 } })}
+                    className="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-all transform hover:scale-105 active:scale-95"
+                  >
+                    <span className="text-4xl">❌</span>
+                  </button>
+                  <button 
+                    onClick={handleTickClick}
+                    className="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-all transform hover:scale-105 active:scale-95"
+                  >
+                    <span className="text-4xl">✅</span>
+                  </button>
+                </div>
+
+                {/* Swipe Indicators */}
+                <motion.div 
+                  className="absolute top-1/2 left-4 transform -translate-y-1/2 pointer-events-none"
+                  style={{ opacity: noOpacity }}
                 >
-                  <span className="text-4xl">❌</span>
-                </button>
-                <button 
-                  onClick={handleTickClick}
-                  className="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition-all transform hover:scale-105 active:scale-95"
+                  <span className="text-6xl">❌</span>
+                </motion.div>
+                <motion.div 
+                  className="absolute top-1/2 right-4 transform -translate-y-1/2 pointer-events-none"
+                  style={{ opacity: yesOpacity }}
                 >
-                  <span className="text-4xl">✅</span>
-                </button>
+                  <span className="text-6xl">✅</span>
+                </motion.div>
               </div>
-
-              {/* Swipe Indicators - keep these for drag feedback */}
-              <motion.div 
-                className="absolute top-1/2 left-4 transform -translate-y-1/2 pointer-events-none"
-                style={{ opacity: noOpacity }}
-              >
-                <span className="text-6xl">❌</span>
-              </motion.div>
-              <motion.div 
-                className="absolute top-1/2 right-4 transform -translate-y-1/2 pointer-events-none"
-                style={{ opacity: yesOpacity }}
-              >
-                <span className="text-6xl">✅</span>
-              </motion.div>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        )}
       </div>
 
       {/* Eliza AI Button */}
