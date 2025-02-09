@@ -5,6 +5,33 @@ import { useNavigate } from 'react-router-dom'
 import { publicClient, getWalletClient, chainConfig } from '../config'
 import { wagmiAbi } from '../abi'
 import { usePrivy } from '@privy-io/react-auth'
+import { createWalletClient ,custom } from 'viem'
+// import { flowTestnet } from 'viem/chains'
+import { parseGwei } from 'viem'
+import { createPublicClient , http } from 'viem'
+
+
+const flowTestnet = {
+  id: 545,
+  name: 'Flow Testnet',
+  network: 'flow-testnet',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'FLOW',
+    symbol: 'FLOW',
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://testnet.evm.nodes.onflow.org']
+    },
+    public: {
+      http: ['https://testnet.evm.nodes.onflow.org']
+    }
+  }
+}
+
+
+
 
 function Create() {
   const navigate = useNavigate()
@@ -18,29 +45,6 @@ function Create() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
-  const switchNetwork = async () => {
-    try {
-      await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: chainConfig.chainId }],
-      })
-    } catch (switchError) {
-      // This error code indicates that the chain has not been added to MetaMask
-      if (switchError.code === 4902) {
-        try {
-          await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [chainConfig],
-          })
-        } catch (addError) {
-          console.error('Error adding chain:', addError)
-          throw new Error('Failed to add network to MetaMask')
-        }
-      } else {
-        throw switchError
-      }
-    }
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -49,34 +53,76 @@ function Create() {
     setSuccess('')
 
     try {
-      // First switch to Flow Testnet
-      await switchNetwork()
-
-      const walletClient = getWalletClient()
-      if (!walletClient) {
-        throw new Error('Wallet not connected')
+      if (!window.ethereum) {
+        throw new Error('No ethereum provider found')
       }
 
-      // Get the signer's address
-      const [address] = await walletClient.getAddresses()
+      // Create public client
+      const publicClient = createPublicClient({
+        chain: flowTestnet,
+        transport: http()
+      })
 
+      // Create wallet client
+      const walletClient = createWalletClient({
+        chain: flowTestnet,
+        transport: custom(window.ethereum)
+      })
+
+      // Switch to Flow Testnet
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0x221' }]
+        })
+      } catch (switchError) {
+        if (switchError.code === 4902) {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [{
+              chainId: '0x221',
+              chainName: 'Flow Testnet',
+              nativeCurrency: {
+                name: 'FLOW',
+                symbol: 'FLOW',
+                decimals: 18
+              },
+              rpcUrls: ['https://testnet.evm.onflow.org'],
+              blockExplorerUrls: ['https://testnet.flowscan.org']
+            }]
+          })
+        }
+      }
+
+      // Get current chain ID to verify
+      const chainId = await walletClient.getChainId()
+      if (chainId !== 545) {
+        throw new Error('Please switch to Flow Testnet')
+      }
+
+      // Prepare the contract write
       const { request } = await publicClient.simulateContract({
+        account: user.wallet.address,
         address: '0x43ca3D2C94be00692D207C6A1e60D8B325c6f12f',
         abi: wagmiAbi,
         functionName: 'submitQuestion',
         args: [question],
-        account: address  // Use the signer's address
+        value: 0n,
       })
 
-      // Write to the contract using the wallet client
-      const hash = await walletClient.writeContract(request)
-      
-      // Wait for transaction confirmation
+      // Execute the contract write
+      const hash = await walletClient.writeContract({
+        ...request,
+        account: user.wallet.address,
+      })
+
       setSuccess('Waiting for transaction confirmation...')
-      await publicClient.waitForTransactionReceipt({ hash })
+      const receipt = await publicClient.waitForTransactionReceipt({ hash })
+      console.log('Transaction receipt:', receipt)
 
       setSuccess('Prediction created successfully!')
       setTimeout(() => navigate('/live-bets'), 2000)
+
     } catch (err) {
       console.error('Error creating prediction:', err)
       setError(err.message || 'Failed to create prediction. Please try again.')
@@ -131,7 +177,7 @@ function Create() {
             </div>
 
             {/* Options */}
-            <div className="bg-pink-200 p-5 rounded-xl border border-pink-400">
+            {/* <div className="bg-pink-200 p-5 rounded-xl border border-pink-400">
               <label className="block text-black text-sm font-semibold mb-3">
                 Prediction Options
               </label>
@@ -157,10 +203,10 @@ function Create() {
                   />
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* End Time */}
-            <div className="bg-pink-200 p-5 rounded-xl border border-pink-400">
+            {/* <div className="bg-pink-200 p-5 rounded-xl border border-pink-400">
               <label className="block text-black text-sm font-semibold mb-2">
                 When will this prediction end?
               </label>
@@ -171,7 +217,7 @@ function Create() {
                 className="w-full px-4 py-2.5 rounded-xl bg-white border-2 border-pink-400 text-black placeholder-gray-500 focus:outline-none focus:border-pink-500 transition-colors"
                 required
               />
-            </div>
+            </div> */}
 
             {/* Submit Button */}
             <button

@@ -22,7 +22,7 @@ function Home() {
 
             <hr className='mt-[10px] mb-[10px] border-blue-500/30'/>
             
-            <span className="bg-blue-300 px-4 py-2 rounded-lg mt-[20px] text-lg">
+            <span className="bg-pink-400 px-4 py-2 rounded-lg mt-[20px] text-lg">
               Predict the future and earn rewards.
             </span>
           </p>

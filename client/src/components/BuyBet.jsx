@@ -2,33 +2,109 @@ import React, { useState } from 'react'
 import { ConnectButton } from './ConnectButton'
 import { FaChartLine, FaPlus, FaUser, FaShoppingCart } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
+import { publicClient, walletClient, chainConfig } from '../config'
+import { wagmiAbi } from '../abi'
+import { usePrivy } from '@privy-io/react-auth'
 
 function BuyBet() {
   const navigate = useNavigate()
+  const { user } = usePrivy()
   const [amount, setAmount] = useState('')
   const [selectedOption, setSelectedOption] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
 
-  const handleSubmit = (e) => {
+  const switchNetwork = async () => {
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: chainConfig.chainId }],
+      })
+    } catch (switchError) {
+      if (switchError.code === 4902) {
+        try {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [chainConfig],
+          })
+        } catch (addError) {
+          console.error('Error adding chain:', addError)
+          throw new Error('Failed to add network to MetaMask')
+        }
+      } else {
+        throw switchError
+      }
+    }
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log({ amount, selectedOption })
+    setLoading(true)
+    setError('')
+    setSuccess('')
+
+    try {
+      // First switch to Flow Testnet
+      await switchNetwork()
+
+      if (!user?.wallet?.address) {
+        throw new Error('Please connect your wallet first')
+      }
+
+      if (!amount) {
+        throw new Error('Please enter an amount')
+      }
+
+      // Convert amount to wei (1 FLOW = 1e18 wei)
+      const amountInWei = `0x${(Number(amount) * 1e18).toString(16)}`
+
+      // Simulate the contract call
+      const { request } = await publicClient.simulateContract({
+        address: '0x43ca3D2C94be00692D207C6A1e60D8B325c6f12f',
+        abi: wagmiAbi,
+        functionName: 'depositFunds',
+        args: [amountInWei],  // Pass amount as argument
+        account: user.wallet.address,
+      })
+
+      // Write to the contract using walletClient
+      setSuccess('Please confirm the transaction in your wallet...')
+      const hash = await walletClient.writeContract(request)
+      
+      setSuccess('Waiting for transaction confirmation...')
+      await publicClient.waitForTransactionReceipt({ hash })
+
+      setSuccess('Funds deposited successfully!')
+      setTimeout(() => navigate('/profile'), 2000)
+    } catch (err) {
+      console.error('Error depositing funds:', err)
+      if (err.message.includes('rejected')) {
+        setError('Transaction was rejected. Please try again.')
+      } else {
+        setError(err.message || 'Failed to deposit funds. Please try again.')
+      }
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <div className="min-h-screen bg-pink-200 flex flex-col items-center justify-center p-8">
       {/* Header with Wallet Connection */}
       <div className="w-full max-w-3xl mb-16">
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center gap-4">
-            <h1 
-              onClick={() => navigate('/')}
-              className="text-3xl font-bold text-pink-600 cursor-pointer hover:text-pink-500 transition-colors"
-            >
-              PrediFlow
-            </h1>
+        <div className="flex flex-col items-center mb-4">
+          <h1 
+            onClick={() => navigate('/')}
+            className="text-3xl font-bold text-pink-600 cursor-pointer hover:text-pink-500 transition-colors mb-4"
+          >
+            PrediFlow
+          </h1>
+          <div className="bg-blue-500 rounded-2xl p-2">
+            <ConnectButton />
           </div>
-          <ConnectButton />
         </div>
-        <div className="h-px bg-pink-800/60 w-full"></div>
+        <div className="h-px bg-pink-800/60 w-full mt-4"></div>
       </div>
 
       {/* Purchase Form */}
@@ -40,10 +116,13 @@ function BuyBet() {
           </div>
           
           <form onSubmit={handleSubmit} className="space-y-6">
+            {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
+            {success && <p className="text-green-500 mb-4 text-center">{success}</p>}
+            
             {/* Amount Input */}
             <div className="bg-pink-200 p-5 rounded-xl border border-pink-400">
               <label className="block text-black text-sm font-semibold mb-2">
-                Amount (USDT)
+                Amount (FLOW)
               </label>
               <input
                 type="number"
@@ -90,9 +169,13 @@ function BuyBet() {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-500 hover:to-pink-400 text-white font-bold py-3.5 px-6 rounded-xl border-2 border-pink-500/50 transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg"
+              disabled={loading}
+              className={`w-full bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-500 hover:to-pink-400 
+                text-white font-bold py-3.5 px-6 rounded-xl border-2 border-pink-500/50 transition-all 
+                transform hover:scale-[1.02] active:scale-[0.98] shadow-lg
+                ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              Purchase Shares
+              {loading ? 'Processing...' : 'Purchase Shares'}
             </button>
           </form>
         </div>

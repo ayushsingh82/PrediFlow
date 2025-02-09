@@ -1,6 +1,6 @@
 # PredictFlow
 
-PredictFlow is an AI-powered prediction market built on the Flow blockchain, leveraging Eliza AI and Polymarket data to enhance user experience and decision-making on telegram-mini app.
+PredictFlow is an AI-powered prediction market on the telegram mini app built on the Flow blockchain, leveraging Eliza AI and Polymarket data to enhance user experience and decision-making
 
 ## Overview
 

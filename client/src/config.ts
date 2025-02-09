@@ -1,9 +1,9 @@
-import { createPublicClient, createWalletClient, http, custom } from 'viem'
+import { createPublicClient, createWalletClient , http, custom } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
-import { flow } from 'viem/chains'
+import { flowTestnet } from 'viem/chains'
 
 // Custom Flow Testnet configuration
-export const flowTestnet = {
+export const flowTestnetTry = {
   id: 545,
   name: 'Flow Testnet',
   network: 'flow-testnet',
@@ -15,6 +15,7 @@ export const flowTestnet = {
   rpcUrls: {
     default: {
       http: ['https://testnet.evm.nodes.onflow.org'],
+      
     },
     public: {
       http: ['https://testnet.evm.nodes.onflow.org'],
@@ -32,12 +33,19 @@ export const publicClient = createPublicClient({
   transport: http()
 })
 
+// Wallet client
+export const walletClient = createWalletClient({
+  chain: flowTestnet,
+  transport: custom(window.ethereum)
+})
+
 // Get Wallet Client function
 export const getWalletClient = () => {
   if (typeof window !== 'undefined' && window.ethereum) {
     return createWalletClient({
       chain: flowTestnet,
-      transport: custom(window.ethereum)
+      transport: custom(window.ethereum),
+      account: window.ethereum.selectedAddress
     })
   }
   return null
@@ -61,3 +69,5 @@ export const chainConfig = {
 
 // Local Account
 export const account = privateKeyToAccount('0xdf57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e')
+
+
