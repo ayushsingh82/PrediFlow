@@ -177,7 +177,7 @@ function Create() {
             </div>
 
             {/* Options */}
-            {/* <div className="bg-pink-200 p-5 rounded-xl border border-pink-400">
+            <div className="bg-pink-200 p-5 rounded-xl border border-pink-400">
               <label className="block text-black text-sm font-semibold mb-3">
                 Prediction Options
               </label>
@@ -203,10 +203,10 @@ function Create() {
                   />
                 </div>
               </div>
-            </div> */}
+            </div>
 
             {/* End Time */}
-            {/* <div className="bg-pink-200 p-5 rounded-xl border border-pink-400">
+            <div className="bg-pink-200 p-5 rounded-xl border border-pink-400">
               <label className="block text-black text-sm font-semibold mb-2">
                 When will this prediction end?
               </label>
@@ -217,7 +217,7 @@ function Create() {
                 className="w-full px-4 py-2.5 rounded-xl bg-white border-2 border-pink-400 text-black placeholder-gray-500 focus:outline-none focus:border-pink-500 transition-colors"
                 required
               />
-            </div> */}
+            </div>
 
             {/* Submit Button */}
             <button
