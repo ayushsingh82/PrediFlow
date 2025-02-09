@@ -6,6 +6,8 @@ PredictFlow is an AI-powered prediction market on the telegram mini app built on
 
 PredictFlow allows users to make predictions and win rewards. With Eliza AI integrated, users can receive insights, analysis, and answers to their queries before making a prediction. The platform is designed for seamless interaction with an intuitive swipe-based interface.
 
+Flow explorer Link - https://evm-testnet.flowscan.io/address/0x37dD26d18abeC2d311e82177f9fa58E9DC14b579
+
 ## Features
 
 - **Blockchain-Powered**: Built on the Flow blockchain for secure and transparent transactions.
