@@ -103,7 +103,7 @@ function Create() {
       // Prepare the contract write
       const { request } = await publicClient.simulateContract({
         account: user.wallet.address,
-        address: '0x43ca3D2C94be00692D207C6A1e60D8B325c6f12f',
+        address: '0x5a8E771b5D0B3d2e4d218478CB7C9029d00c4e5a',
         abi: wagmiAbi,
         functionName: 'submitQuestion',
         args: [question],
